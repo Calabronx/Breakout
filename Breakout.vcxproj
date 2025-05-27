@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ball.cpp" />
     <ClCompile Include="src\paddle.cpp" />
     <ClCompile Include="src\entity.cpp" />
     <ClCompile Include="src\brick.cpp" />
@@ -154,6 +155,7 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ball.h" />
     <ClInclude Include="src\paddle.h" />
     <ClInclude Include="src\colors.h" />
     <ClInclude Include="src\entity.h" />

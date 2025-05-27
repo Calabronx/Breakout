@@ -7,8 +7,11 @@
 #include "entity.h"
 #include "colors.h"
 
-const int WIDTH = 100;
-const int HEIGHT = 30;
+const int WIDTH = 55;
+const int HEIGHT = 25;
+const int OFFSET = 10;
+const int WALL_OFFSET_X = 20;
+const int WALL_OFFSET_Y = 180;
 
 class Brick : public Entity
 {
@@ -17,14 +20,7 @@ class Brick : public Entity
 		~Brick();
 
 	public:
-		SDL_Rect& getBrickRectangle();
-		void setBrickPosition(int x, int y);
 		void draw(SDL_Renderer* renderer, Color color_line, const int col, const int row);
-
-	private:
-		SDL_Rect	m_rect;
-		Vector2f	m_position;
-
 };
 #endif 
 

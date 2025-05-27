@@ -6,10 +6,11 @@
 
 #include "entity.h"
 
-const int P_WIDTH = 100;
-const int P_HEIGHT = 30;
+const int P_WIDTH = 50;
+const int P_HEIGHT = 25;
 const int INITIAL_POS_X = 380;
-const int INITIAL_POS_Y = 700;
+const int INITIAL_POS_Y = 960;
+const int LIFES = 3;
 
 class Paddle : public Entity
 {
@@ -21,14 +22,7 @@ class Paddle : public Entity
 		void		draw(SDL_Renderer* renderer);
 					
 	private:
-		void		setPaddlePosition(int x, int y);
-
-	public:
-		virtual		void setPosition(float _x, float _y);
-		virtual		Vector2f getPosition();
-
-	private:
-		Vector2f	m_position;
+		int			m_lifes;
 };
 
 #endif

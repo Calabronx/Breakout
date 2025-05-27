@@ -6,19 +6,11 @@
 
 #include "brick.h"
 #include "paddle.h"
+#include "ball.h"
 
 #include <vector>
 
-const int SCREEN_WIDTH = 835;
-const int SCREEN_HEIGHT = 768;
-const int COL_SIZE = 8;
-const int ROW_SIZE = 8;
-const int OFFSET = 10;
-//const int Y_OFFSET = 30;
-const int BRICK_WIDTH = 105;
-const int BRICK_HEIGHT = 35;
-
-// classic game class structure
+// game class structure
 class Game
 {
 	public:
@@ -29,16 +21,18 @@ class Game
 		void init();
 		void update();
 		void render();
+		bool check_collisions(Entity *first, Entity *second);
 
 	public:
 		void run();
 
 private:
-	std::vector<std::vector<Brick>> m_bricks_vec;
-	SDL_Window						*m_window;
-	SDL_Renderer					*m_renderer;
-	SDL_Surface						*m_surface;
-	Paddle							*m_player;
+	std::vector<std::vector<Brick>>		m_bricks_vec;
+	SDL_Window							*m_window;
+	SDL_Renderer						*m_renderer;
+	SDL_Surface							*m_surface;
+	Paddle								*m_player;
+	Ball								*m_ball;
 };
 #endif
 
