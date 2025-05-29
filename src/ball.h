@@ -6,7 +6,7 @@
 
 #include "entity.h"
 
-const int MAX_BAll_VELOCITY = 9;
+const int MAX_BAll_VELOCITY = 8;
 const int INITIAL_BAll_VELOCITY = 5;
 
 struct Ball_State
@@ -18,6 +18,7 @@ struct Ball_State
 	bool 		expulse			 		= false;
 	bool 		change_velocity 		= false;
 	bool 		first_paddle_collision  = false;
+	bool 		increase_velocity  		= false;
 
 };
 
@@ -32,6 +33,9 @@ class Ball : public Entity
 		// mover la bola
 		void moveBall();
 		virtual bool collision(Vector2f target);
+
+	private:
+		float m_velocity;
 
 };
 #endif

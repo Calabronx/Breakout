@@ -10,7 +10,7 @@ const int P_WIDTH = 50;
 const int P_HEIGHT = 25;
 const int INITIAL_POS_X = 380;
 const int INITIAL_POS_Y = 960;
-const int LIFES = 3;
+const int LIFES = 6;
 
 class Paddle : public Entity
 {

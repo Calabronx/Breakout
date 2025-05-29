@@ -15,7 +15,7 @@ const int RIGHT_LIMIT = SCREEN_WIDTH - 50;
 const int LEFT_LIMIT = 20;
 const int PADDLE_VELOCITY = 10 * 1;
 const int COOLDOWN_TO_RESPAWN = 2;
-
+const int BRICKS_AMOUNT = 112;
 
 Game::Game()
 	: m_bricks_vec(ROW_SIZE, std::vector<Brick>(COL_SIZE))
@@ -114,10 +114,16 @@ void Game::update()
 	ball_position.x += ball_velocity.x * m_game_state->ball.velocity;
 	ball_position.y += ball_velocity.y * m_game_state->ball.velocity;
 
-	if(m_player->isDestroyed())
+	if(m_player->isDestroyed() || m_game_state->bricks_destroyed_counter >= BRICKS_AMOUNT)
 	{
 		m_game_state->phase = GAME_PHASE_GAME_OVER;
 		return;
+	}
+
+	if (m_game_state->bricks_destroyed_counter == 14 || m_game_state->bricks_destroyed_counter == 28 || m_game_state->bricks_destroyed_counter == 56
+		|| m_game_state->bricks_destroyed_counter >= 80)
+	{
+		m_game_state->ball.increase_velocity = true;
 	}
 
 	if(m_game_state->phase == GAME_PHASE_BALL_OUT)
@@ -129,6 +135,7 @@ void Game::update()
 		}
 		m_game_state->phase = GAME_PHASE_PLAY;
 		m_game_state->ball.velocity = m_game_state->ball.initial_velocity;
+		m_game_state->ball.first_paddle_collision = false;
 		m_player->damage(); 
 		m_player->setPosition(380, 960);
 	}
@@ -145,10 +152,11 @@ void Game::update()
 		{
 			ball_position.x = LEFT_LIMIT + 2;
 		}
-		m_game_state->ball.brick_collision = false;
+		// m_game_state->ball.brick_collision = false;
+		m_game_state->ball.first_paddle_collision = false;
 	}
 
-	if (ball_position.y < 0 || ball_position.y > SCREEN_HEIGHT)
+	if (ball_position.y < 0 || ball_position.y <= 185.00  || ball_position.y > SCREEN_HEIGHT)
 	{
 		if (ball_position.y > SCREEN_HEIGHT)
 		{
@@ -157,24 +165,39 @@ void Game::update()
 			m_ball->setVelocity(ball_velocity);
 			m_game_state->ball.change_velocity = false;
 			m_game_state->phase = GAME_PHASE_BALL_OUT;
+			// m_game_state->ball.brick_collision = false;
 			return;	
 		}
+		if (ball_position.y <= 181.00)
+		{
+			ball_position.y = 180.00;
+			ball_velocity.y = -ball_velocity.y;
+			// m_game_state->ball.brick_collision = false;
+		} else {
+			// ball_velocity.y = -ball_velocity.y;
+			// m_game_state->ball.brick_collision = false;
+		}
+		m_game_state->ball.first_paddle_collision = false;
+		m_ball->setPosition(ball_position);
 
-		ball_velocity.y = -ball_velocity.y;
-		m_game_state->ball.brick_collision = false;
 	}
 
 	bool collision_player = check_collisions(m_ball, m_player);
 	if (collision_player && !m_game_state->ball.first_paddle_collision)
-	{
+	{     
 		ball_velocity.y = -ball_velocity.y;
+		ball_velocity.x = -ball_velocity.x;
 
 		if(m_game_state->ball.velocity >= m_game_state->ball.max_velocity)
 		{
 			m_game_state->ball.velocity = m_game_state->ball.max_velocity;
 		} else {
-			m_game_state->ball.velocity *= 1.02f;
-			std::cout << "BALL velocity  : " << m_game_state->ball.velocity << std::endl;
+			if(m_game_state->ball.increase_velocity)
+			{
+				m_game_state->ball.velocity *= 1.02f;
+				std::cout << "BALL velocity  increase: " << m_game_state->ball.velocity << std::endl;
+				m_game_state->ball.increase_velocity = false;
+			}
 		}
 
 		m_game_state->ball.brick_collision = false;
@@ -192,7 +215,9 @@ void Game::update()
 
 		m_game_state->ball.first_paddle_collision = true;
 	} else if (collision_player){
-		m_game_state->ball.velocity *= 1.02f;
+		if (m_game_state->bricks_destroyed_counter >= 15)
+			m_game_state->ball.velocity *= 1.02f;
+
 		std::cout << "BALL velocity  : " << m_game_state->ball.velocity << std::endl;
 	}
 
@@ -214,11 +239,7 @@ void Game::update()
 						if(m_game_state->ball.velocity >= m_game_state->ball.max_velocity)
 						{
 							m_game_state->ball.velocity = m_game_state->ball.max_velocity;
-						} else {
-							m_game_state->ball.velocity *= 1.02f;
-							std::cout << "BALL velocity  : " << m_game_state->ball.velocity << std::endl;
-						}
-
+						} 
 						std::cout << "BRICK  x: " << m_bricks_vec[row][col].getPosition().x << " y: " << m_bricks_vec[row][col].getPosition().y << std::endl;
 					} else if (check_collisions(m_ball, &m_bricks_vec[row][col]) && !m_game_state->ball.expulse) {
 						m_game_state->ball.expulse = true;
@@ -227,11 +248,6 @@ void Game::update()
 					}
 				}
 			}
-	}
-
-	if (ball_position.y <= 103.614)
-	{
-		 ball_velocity.y = -ball_velocity.y;
 	}
 
 	m_ball->setPosition(ball_position);
