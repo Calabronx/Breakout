@@ -6,6 +6,20 @@
 
 #include "entity.h"
 
+const int MAX_BAll_VELOCITY = 9;
+const int INITIAL_BAll_VELOCITY = 5;
+
+struct Ball_State
+{
+	const int 	initial_velocity = INITIAL_BAll_VELOCITY;
+	const int 	max_velocity = MAX_BAll_VELOCITY;
+	float 		velocity;
+	bool 		brick_collision 		= false;
+	bool 		expulse			 		= false;
+	bool 		change_velocity 		= false;
+	bool 		first_paddle_collision  = false;
+
+};
 
 class Ball : public Entity
 {

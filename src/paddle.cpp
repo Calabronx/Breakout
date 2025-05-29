@@ -26,3 +26,13 @@ void Paddle::draw(SDL_Renderer* renderer)
 	SDL_RenderDrawRect(renderer, &rect);
 }
 
+void Paddle::damage()
+{
+	if (m_lifes <= 0 || isDestroyed())
+	{
+		destroy();
+		return;
+	}
+
+	m_lifes-=1;
+}

@@ -10,6 +10,26 @@
 
 #include <vector>
 
+// game phases
+enum Game_Phase
+{
+	GAME_PHASE_START,
+	GAME_PHASE_PLAY,
+	GAME_PHASE_BALL_OUT,
+	GAME_PHASE_GAME_OVER
+};
+
+// game state machine
+struct Game_State
+{
+	Game_Phase phase;
+	Ball_State ball;
+	int   points;
+	int   bricks_destroyed_counter;
+	int   cooldown_to_respawn;
+	float time;
+};
+
 // game class structure
 class Game
 {
@@ -33,6 +53,7 @@ private:
 	SDL_Surface							*m_surface;
 	Paddle								*m_player;
 	Ball								*m_ball;
+	Game_State							*m_game_state;
 };
 #endif
 

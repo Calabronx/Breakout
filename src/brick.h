@@ -8,7 +8,7 @@
 #include "colors.h"
 
 const int WIDTH = 55;
-const int HEIGHT = 25;
+const int HEIGHT = 20;
 const int OFFSET = 10;
 const int WALL_OFFSET_X = 20;
 const int WALL_OFFSET_Y = 180;

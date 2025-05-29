@@ -20,7 +20,7 @@ class Paddle : public Entity
 
 	public:
 		void		draw(SDL_Renderer* renderer);
-					
+		void		damage();			
 	private:
 		int			m_lifes;
 };

@@ -74,10 +74,6 @@ void Entity::destroy()
 	m_destroyed = true;
 }
 
-void Entity::damage()
-{
-}
-
 bool Entity::isDestroyed() const
 {
 	return m_destroyed;

@@ -45,7 +45,6 @@ class Entity
 		void				setLayer(int layer);
 		int				getLayer() const;
 		void			destroy();
-		void			damage();
 
 	private:
 		int				m_lifes;
