@@ -3,20 +3,25 @@
 #define GAME_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "brick.h"
 #include "paddle.h"
 #include "ball.h"
+#include "text.h"
 
 #include <vector>
+#include <map>
 
 // game phases
 enum Game_Phase
 {
+	GAME_PHASE_PAUSE,
 	GAME_PHASE_START,
 	GAME_PHASE_PLAY,
 	GAME_PHASE_BALL_OUT,
-	GAME_PHASE_GAME_OVER
+	GAME_PHASE_GAME_OVER,
+	GAME_PHASE_WIN
 };
 
 // game state machine
@@ -24,10 +29,14 @@ struct Game_State
 {
 	Game_Phase phase;
 	Ball_State ball;
-	int   points;
-	int   bricks_destroyed_counter;
-	int   cooldown_to_respawn;
-	float time;
+	Paddle_State paddle;
+	float 	time;
+	int   	points;
+	int   	bricks_destroyed_counter;
+	int   	cooldown_to_respawn;
+	bool 	paused_game = false;
+	bool 	exit_game = false;
+	bool 	start_screen = false;
 };
 
 // game class structure
@@ -41,7 +50,11 @@ class Game
 		void init();
 		void update();
 		void render();
+		void input(SDL_Event event, std::map<SDL_Keycode, bool> key_map);
+		void wait_time_to_respawn();
+		void do_collisions(Vector2f &ball_position, Vector2f &paddle_position, Vector2f &ball_velocity);
 		bool check_collisions(Entity *first, Entity *second);
+		bool check_game_status();
 
 	public:
 		void run();
@@ -54,6 +67,9 @@ private:
 	Paddle								*m_player;
 	Ball								*m_ball;
 	Game_State							*m_game_state;
+	Text								*m_highscore_txt;
+	Text								*m_player_lifes_txt;
+	Text								*m_screen_pause_txt;
 };
 #endif
 

@@ -4,7 +4,7 @@
 Ball::Ball()
 {
 	setLayer(BALL);
-	setPosition(420, 680);
+	setPosition(410, 680);
 	setVelocity(0.0f, 1.0f);
 	setSize(20, 20);
 	

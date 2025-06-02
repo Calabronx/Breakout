@@ -1,6 +1,8 @@
 #include "paddle.h"
 #include "colors.h"
 
+#include <iostream>
+
 Paddle::Paddle()
 	: m_lifes(LIFES)
 {
@@ -28,11 +30,32 @@ void Paddle::draw(SDL_Renderer* renderer)
 
 void Paddle::damage()
 {
+	m_lifes--;
 	if (m_lifes <= 0 || isDestroyed())
 	{
 		destroy();
 		return;
 	}
 
-	m_lifes-=1;
+	std::cout << "Paddle::damage()" << std::endl;
+}
+
+int Paddle::getLifes() const
+{
+	return m_lifes;
+}
+
+void Paddle::movePaddle()
+{
+	// if (paddle_position.x >= RIGHT_LIMIT)
+	// {
+	// 	m_player->setPosition(paddle_position.x - 10, paddle_position.y);
+	// }
+
+	// if (paddle_position.x <= LEFT_LIMIT)
+	// {
+	// 	m_player->setPosition(paddle_position.x + 10, paddle_position.y);
+	// }
+
+
 }

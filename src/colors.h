@@ -19,6 +19,13 @@ inline Color color(unsigned int r, unsigned int g, unsigned int b, unsigned int 
 	return result;
 }
 
+const Color LIGHT_COLORS[] = {
+    color(0xFF, 0x99, 0x99, 0xFF),  // Light Red
+    color(0xFF, 0xCC, 0x99, 0xFF),  // Light Orange
+    color(0x99, 0xFF, 0x99, 0xFF),  // Light Green
+    color(0xFF, 0xFF, 0x99, 0xFF),  // Light Yellow
+};
+
 const Color RED = {
 	color(0xFF,0x00,0x00,0xFF)
 };
