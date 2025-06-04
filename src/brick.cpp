@@ -7,14 +7,12 @@ const int offset_y = 5;
 
 Brick::Brick()
 {	
-	// set_brick_type(row);
 	setLayer(BRICK);
 	setSize(WIDTH, HEIGHT);
 }
 
 Brick::~Brick()
 {
-	std::cout << "brick destroyed" << std::endl;
 }
 
 void Brick::fill_rect(SDL_Renderer* renderer, int x, int y, int width, int height, Color color)

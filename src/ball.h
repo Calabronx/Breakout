@@ -6,7 +6,7 @@
 
 #include "entity.h"
 
-const int MAX_BAll_VELOCITY = 8;
+const int MAX_BAll_VELOCITY = 7;
 const int INITIAL_BAll_VELOCITY = 5;
 
 struct Ball_State
@@ -29,13 +29,16 @@ class Ball : public Entity
 		~Ball();
 
 	public:
+		// void draw(SDL_Renderer* renderer, Color color);
 		void draw(SDL_Renderer* renderer);
 		// mover la bola
 		void moveBall();
+		void count_brick();
 		virtual bool collision(Vector2f target);
 
 	private:
-		float m_velocity;
+		float 	m_velocity;
+		int 	m_brick_destroyed_counter;
 
 };
 #endif

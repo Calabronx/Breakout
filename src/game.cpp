@@ -12,7 +12,7 @@ const int SCREEN_WIDTH = 805;
 const int SCREEN_HEIGHT = 1000;
 const int COL_SIZE = 14;
 const int ROW_SIZE = 8;
-const int RIGHT_LIMIT = SCREEN_WIDTH - 70;
+const int RIGHT_LIMIT = SCREEN_WIDTH - 40;
 const int LEFT_LIMIT = 20;
 const int PADDLE_VELOCITY = 10 * 1;
 const int COOLDOWN_TO_RESPAWN = 2;
@@ -20,7 +20,7 @@ const int BRICKS_AMOUNT = 112;
 const int TEXT_SCORE_X = 50;
 const int TEXT_SCORE_Y = 100;
 const int TEXT_PAUSED_TITLE_Y = 100;
-const int INITIAL_PLAYER_X = 390;
+const int INITIAL_PLAYER_X = 395;
 
 Game::Game()
 	: m_bricks_vec(ROW_SIZE, std::vector<Brick>(COL_SIZE))
@@ -105,6 +105,8 @@ void Game::init()
 	m_highscore_txt = new Text();
 	m_player_lifes_txt = new Text();
 	m_screen_pause_txt = new Text();
+	m_screen_win_txt = new Text();
+	m_loose_win_txt = new Text();
 
 	SDL_UpdateWindowSurface(m_window);
 
@@ -150,6 +152,7 @@ bool Game::check_game_status()
 
 void Game::do_collisions(Vector2f &ball_position, Vector2f &paddle_position, Vector2f &ball_velocity)
 {
+
 	if (ball_position.x <= LEFT_LIMIT || ball_position.x >= RIGHT_LIMIT)
 	{
 		ball_velocity.x = -ball_velocity.x;
@@ -174,12 +177,16 @@ void Game::do_collisions(Vector2f &ball_position, Vector2f &paddle_position, Vec
 		ball_velocity.y = -ball_velocity.y;
 		m_game_state->ball.first_paddle_collision = false;
 		m_ball->setPosition(ball_position);          
-
 	}
 	
 	bool collision_player = check_collisions(m_ball, m_player);
 	if (collision_player && !m_game_state->ball.first_paddle_collision)
 	{     
+		if (ball_velocity.x == 0)
+		{
+			ball_velocity.x = 1;
+		}
+
 		ball_velocity.y = -ball_velocity.y;
 		ball_velocity.x = -ball_velocity.x;
 
@@ -229,12 +236,19 @@ void Game::do_collisions(Vector2f &ball_position, Vector2f &paddle_position, Vec
 			{
 				if(!m_bricks_vec[row][col].isDestroyed())
 				{
-					if (check_collisions(m_ball, &m_bricks_vec[row][col]) && !m_bricks_vec[row][col].isDestroyed() && !m_game_state->ball.brick_collision)
+					if (check_collisions(m_ball, &m_bricks_vec[row][col]) && !m_bricks_vec[row][col].isDestroyed())
 					{
 						m_game_state->bricks_destroyed_counter++;
 						ball_velocity.y = -ball_velocity.y;
 						m_ball->setPosition(ball_position.x + 10, ball_position.y + 10);
-						m_bricks_vec[row][col].destroy();
+						if(!m_game_state->ball.brick_collision)
+						{
+							m_bricks_vec[row][col].destroy();
+						} else {
+							// m_ball->setPosition(ball_position.x, ball_position.y);
+							ball_velocity.y = -ball_velocity.y;
+						}
+						m_ball->count_brick();
 						m_game_state->ball.brick_collision = true;
 						m_game_state->ball.first_paddle_collision = false;
 
@@ -276,12 +290,42 @@ void Game::wait_time_to_respawn()
 		m_game_state->phase = GAME_PHASE_PLAY;
 		m_game_state->ball.velocity = m_game_state->ball.initial_velocity;
 		m_game_state->ball.first_paddle_collision = false;
-		m_player->setPosition(410, 960);
+		m_player->setPosition(INITIAL_PLAYER_X, 960);
 		m_ball->setPosition(410,680);
 	}
 }
 
-void Game::update()
+void Game::reset_game()
+{
+
+	m_game_state->phase = GAME_PHASE_START;
+	m_player->restart_lifes();
+
+	for (int row = 0; row < m_bricks_vec.size(); row++)
+	{
+		for (int col = 0; col < m_bricks_vec[row].size(); col++)
+		{
+				m_bricks_vec[row][col].reborn();
+		}
+	}
+	m_game_state->start_screen = true;
+	m_game_state->points = 0;
+
+	int wait_time = m_player->isDestroyed()? 6 : 2;
+	for (int i = wait_time; i > 0; --i)
+	{	
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	}
+	m_game_state->win_game = false;
+	m_game_state->restart = false;
+
+	m_player->setPosition(INITIAL_PLAYER_X, 960);
+	m_ball->setPosition(410,680);
+	m_ball->setVelocity(0.0f, 1.0f);
+	return;
+}
+
+void Game::update(int dt)
 {
 	Vector2f ball_position = m_ball->getPosition();
 	Vector2f ball_velocity = m_ball->getVelocity();
@@ -290,16 +334,21 @@ void Game::update()
 	ball_position.x += ball_velocity.x * m_game_state->ball.velocity;
 	ball_position.y += ball_velocity.y * m_game_state->ball.velocity;
 
-	if(m_player->isDestroyed())
+	if(m_player->isDestroyed() || m_game_state->restart)
 	{
-		m_game_state->phase = GAME_PHASE_GAME_OVER;
+		reset_game();
 		return;
 	}
+
+	// if(m_game_state->restart)
+	// {
+	// 	m_game_state->restart = false;
+	// 	reset_game();
+	// }
 
 	if (check_game_status())
 	{
 		m_game_state->phase = GAME_PHASE_WIN;
-		return;
 	}
 
 	if (m_game_state->bricks_destroyed_counter == 14 || m_game_state->bricks_destroyed_counter == 28 || m_game_state->bricks_destroyed_counter == 56
@@ -335,7 +384,7 @@ void Game::update()
 		m_player->damage(); 
 	}
 
-	render();
+	render(dt);
 }
 
 inline Color choose_row_color(int row) {
@@ -388,11 +437,15 @@ inline void render_limits(SDL_Renderer *renderer, const int width, const int hei
 	SDL_SetRenderDrawColor(renderer, BLACK.r, BLACK.g, BLACK.b, BLACK.a);
 }
 
-void Game::render()
+
+void Game::render(int dt)
 {
 	SDL_RenderClear(m_renderer);
 
 	m_player->draw(m_renderer);
+
+	// Color ball_random_color = color()
+
 	m_ball->draw(m_renderer);
 
 	render_brick_wall(m_renderer, m_bricks_vec);
@@ -400,16 +453,54 @@ void Game::render()
 	render_limits(m_renderer, 25, SCREEN_HEIGHT, 0, 0);
 	render_limits(m_renderer, 25,SCREEN_HEIGHT , SCREEN_WIDTH - 20, 0);
 	render_limits(m_renderer, SCREEN_WIDTH, 60, 0, 0);
-	m_highscore_txt->render(m_renderer, "SCORE: " +std::to_string(m_game_state->points), TEXT_SCORE_X, TEXT_SCORE_Y, 80, 80);
-	m_highscore_txt->render(m_renderer, "LIFES: " +std::to_string(m_player->getLifes()), TEXT_SCORE_X + 630, TEXT_SCORE_Y, 80, 80);
+
+	int current_time = dt;
+
+	if (current_time - m_game_state->last_blink_time >= m_game_state->blink_interval)
+	{
+		m_game_state->showText = !m_game_state->showText;
+		m_game_state->last_blink_time = current_time;
+	}
 
 	if (m_game_state->start_screen)
 	{
-		m_screen_pause_txt->render(m_renderer, "BREAKOUT", (SCREEN_WIDTH / 2) - 80, TEXT_PAUSED_TITLE_Y, 190, 110);
-		m_screen_pause_txt->render(m_renderer, "Press any key to start", (SCREEN_WIDTH / 2 - 100), SCREEN_HEIGHT / 2, 250, 80);
+		if (m_game_state->win_game)
+		{
+			// if (m_game_state->showText)
+			// {
+			// 	m_screen_win_txt->render(m_renderer, "GAME WON!", (SCREEN_WIDTH / 2) - 80, TEXT_PAUSED_TITLE_Y, 190, 100);
+			// }
+		} else {
+			m_screen_pause_txt->render(m_renderer, "BREAKOUT", (SCREEN_WIDTH / 2) - 80, TEXT_PAUSED_TITLE_Y, 190, 110);
+			if (m_game_state->showText)
+			{
+				m_screen_pause_txt->render(m_renderer, "Press any key to start", (SCREEN_WIDTH / 2 - 100), SCREEN_HEIGHT / 2, 250, 80);
+			}
+		}
 	} else if (m_game_state->paused_game)
 	{
 		m_screen_pause_txt->render(m_renderer, "GAME PAUSED", (SCREEN_WIDTH / 2) - 80, TEXT_PAUSED_TITLE_Y, 190, 100);
+	} else {
+		if (m_game_state->win_game)
+		{
+			if (m_game_state->showText)
+			{
+				m_screen_win_txt->render(m_renderer, "GAME WON!", (SCREEN_WIDTH / 2) - 80, TEXT_PAUSED_TITLE_Y, 190, 100);
+			}
+			//m_game_state->win_screen_time = current_time;
+			/*if (m_game_state->win_screen_time  >= 1000)
+			{
+				m_game_state->win_screen_time = 0;
+				m_game_state->win_game = false;
+			}*/
+		}
+		if (m_player->isDestroyed())
+		{
+			m_loose_win_txt->render(m_renderer, "GAME OVER", (SCREEN_WIDTH / 2) - 80, TEXT_PAUSED_TITLE_Y, 190, 100);
+		}
+
+		m_highscore_txt->render(m_renderer, "SCORE: " +std::to_string(m_game_state->points), TEXT_SCORE_X, TEXT_SCORE_Y, 80, 80);
+		m_highscore_txt->render(m_renderer, "LIFES: " +std::to_string(m_player->getLifes()), TEXT_SCORE_X + 630, TEXT_SCORE_Y, 80, 80);
 	}
 
 	SDL_RenderPresent(m_renderer);
@@ -496,7 +587,7 @@ void Game::run()
 	{
 		SDL_Event event;
 		unsigned int delta = SDL_GetTicks();
-		delta = delta - time;
+		// delta = delta - time;
 		while (SDL_PollEvent(&event))
 		{
 			switch (event.type)
@@ -510,6 +601,13 @@ void Game::run()
 				{
 					m_game_state->phase = GAME_PHASE_PLAY;
 					m_game_state->start_screen = false;
+
+				} else if (m_game_state->win_game)
+				{
+					m_game_state->phase = GAME_PHASE_PLAY;
+					m_game_state->start_screen = false;
+					m_game_state->win_game = false;
+					m_game_state->restart = true;
 				}
 				else if (key_map[SDLK_ESCAPE])
 				{
@@ -522,6 +620,7 @@ void Game::run()
 						m_game_state->phase = GAME_PHASE_PAUSE;
 						m_game_state->paused_game = true;
 					}
+
 				}
 				break;
 			case	SDL_KEYUP:
@@ -537,8 +636,8 @@ void Game::run()
 
 		if(m_game_state->phase == GAME_PHASE_WIN)
 		{
-			std:: cout << "win!" << std::endl;
-			m_game_state->exit_game = true;
+			m_game_state->win_game = true;
+			// reset_game();
 		}
 
 		if(!m_game_state->start_screen && !m_game_state->paused_game)
@@ -559,7 +658,7 @@ void Game::run()
 			}
 		}
 
-		update();
+		update(delta);
 	}
 
 	TTF_Quit();

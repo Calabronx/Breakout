@@ -83,3 +83,8 @@ bool Entity::collision(Vector2f target)
 {
 	return false;
 }
+
+void Entity::reborn()
+{
+	m_destroyed = false;
+}

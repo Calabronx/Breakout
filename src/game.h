@@ -34,9 +34,15 @@ struct Game_State
 	int   	points;
 	int   	bricks_destroyed_counter;
 	int   	cooldown_to_respawn;
+	int   	win_screen_time = 0;
+	const int blink_interval = 500;
+	int last_blink_time = 0;
 	bool 	paused_game = false;
 	bool 	exit_game = false;
+	bool 	win_game = false;
 	bool 	start_screen = false;
+	bool showText = false;
+	bool restart = false;
 };
 
 // game class structure
@@ -48,8 +54,9 @@ class Game
 
 	private:
 		void init();
-		void update();
-		void render();
+		void reset_game();
+		void update(int dt);
+		void render(int dt);
 		void input(SDL_Event event, std::map<SDL_Keycode, bool> key_map);
 		void wait_time_to_respawn();
 		void do_collisions(Vector2f &ball_position, Vector2f &paddle_position, Vector2f &ball_velocity);
@@ -70,6 +77,8 @@ private:
 	Text								*m_highscore_txt;
 	Text								*m_player_lifes_txt;
 	Text								*m_screen_pause_txt;
+	Text								*m_screen_win_txt;
+	Text								*m_loose_win_txt;
 };
 #endif
 
