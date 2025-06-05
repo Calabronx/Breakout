@@ -20,7 +20,7 @@ Para que un ladrillo se destruya, la bola debe **rebotar al menos una vez**:
 | 🟨 Amarillo         | 1      |
 | 🟩 Verde            | 3      |
 | 🟧 Naranja          | 5      |
-| 🟥 Rojo             | 37     |
+| 🟥 Rojo             | 7      |
 
 ## 🗺️ Nivel
 
