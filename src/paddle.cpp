@@ -2,12 +2,11 @@
 #include "colors.h"
 
 #include <iostream>
-
 Paddle::Paddle()
 	: m_lifes(LIFES)
 {
 	setLayer(PADDLE);
-	setPosition(INITIAL_POS_X, INITIAL_POS_Y);
+	setPosition(INITIAL_PLAYER_X, INITIAL_PLAYER_Y);
 	setSize(P_WIDTH, P_HEIGHT);
 }
 

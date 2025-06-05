@@ -6,7 +6,7 @@
 Ball::Ball()
 {
 	setLayer(BALL);
-	setPosition(410, 680);
+	setPosition(410, INITIAL_BALL_Y);
 	setVelocity(0.0f, 1.0f);
 	setSize(20, 20);
 	m_brick_destroyed_counter = 0;

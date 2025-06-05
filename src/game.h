@@ -35,8 +35,8 @@ struct Game_State
 	int   	bricks_destroyed_counter;
 	int   	cooldown_to_respawn;
 	int   	win_screen_time = 0;
-	const int blink_interval = 500;
 	int last_blink_time = 0;
+	const int blink_interval = 500;
 	bool 	paused_game = false;
 	bool 	exit_game = false;
 	bool 	win_game = false;

@@ -5,9 +5,7 @@
 #include <SDL2/SDL.h>
 
 #include "entity.h"
-
-const int MAX_BAll_VELOCITY = 7;
-const int INITIAL_BAll_VELOCITY = 5;
+#include "constants.h"
 
 struct Ball_State
 {

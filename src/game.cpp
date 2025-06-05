@@ -1,5 +1,6 @@
 #include "game.h"
 
+#include <windows.h>
 #include <iostream>
 #include <map>
 #include <chrono>
@@ -7,20 +8,7 @@
 
 #include "colors.h"
 #include "text.h"
-
-const int SCREEN_WIDTH = 805;
-const int SCREEN_HEIGHT = 1000;
-const int COL_SIZE = 14;
-const int ROW_SIZE = 8;
-const int RIGHT_LIMIT = SCREEN_WIDTH - 40;
-const int LEFT_LIMIT = 20;
-const int PADDLE_VELOCITY = 10 * 1;
-const int COOLDOWN_TO_RESPAWN = 2;
-const int BRICKS_AMOUNT = 112;
-const int TEXT_SCORE_X = 50;
-const int TEXT_SCORE_Y = 100;
-const int TEXT_PAUSED_TITLE_Y = 100;
-const int INITIAL_PLAYER_X = 395;
+#include "constants.h"
 
 Game::Game()
 	: m_bricks_vec(ROW_SIZE, std::vector<Brick>(COL_SIZE))
@@ -34,6 +22,7 @@ Game::Game()
 Game::~Game()
 {
 }
+
 
 void Game::init()
 {
@@ -111,6 +100,7 @@ void Game::init()
 	SDL_UpdateWindowSurface(m_window);
 
 }
+
 
 bool Game::check_collisions(Entity *first, Entity *second)
 {
@@ -290,8 +280,8 @@ void Game::wait_time_to_respawn()
 		m_game_state->phase = GAME_PHASE_PLAY;
 		m_game_state->ball.velocity = m_game_state->ball.initial_velocity;
 		m_game_state->ball.first_paddle_collision = false;
-		m_player->setPosition(INITIAL_PLAYER_X, 960);
-		m_ball->setPosition(410,680);
+		m_player->setPosition(INITIAL_PLAYER_X, INITIAL_PLAYER_Y);
+		m_ball->setPosition(410,INITIAL_BALL_Y);
 	}
 }
 
@@ -319,8 +309,8 @@ void Game::reset_game()
 	m_game_state->win_game = false;
 	m_game_state->restart = false;
 
-	m_player->setPosition(INITIAL_PLAYER_X, 960);
-	m_ball->setPosition(410,680);
+	m_player->setPosition(INITIAL_PLAYER_X, INITIAL_PLAYER_Y);
+	m_ball->setPosition(410,INITIAL_BALL_Y);
 	m_ball->setVelocity(0.0f, 1.0f);
 	return;
 }

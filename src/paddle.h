@@ -6,12 +6,7 @@
 
 #include "entity.h"
 #include "colors.h"
-
-const int P_WIDTH = 50;
-const int P_HEIGHT = 25;
-const int INITIAL_POS_X = 395;
-const int INITIAL_POS_Y = 960;
-const int LIFES = 5;
+#include "constants.h"
 
 struct Paddle_State
 {
