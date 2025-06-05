@@ -1,21 +1,31 @@
-Clasico juego Brekaout
+#  Clásico Breakout 
 
-Controles:
+## 🕹️ Controles
 
-Flechas para moverse
-Tecla ESC para poner pausa
+- ⬅️ ➡️ Flechas izquierda y derecha para mover el paddle  
+- ⎋ Tecla `ESC` para pausar el juego
 
-Objetivo:
-Romper todos los ladrillos de colores sin perder todas las vidas
-Para destruir un ladrillo se tiene que hacer rebotar la bola al menos 1 vez con el paddle (jugador) o contra la pared o techo.
+## 🎯 Objetivo
 
-Puntos:
-Ladrillos amarrillos suman 1 punto
-Ladrillos verdes suman 3 puntos
-Ladrillos naranjas suman 5 puntos
-Ladrillos rojos suman 37 puntos
+Romper todos los ladrillos de colores **sin perder todas tus vidas**.
 
-El juego tiene un solo nivel
+Para que un ladrillo se destruya, la bola debe **rebotar al menos una vez**:
+- contra el **paddle** (jugador), o
+- contra una **pared o el techo**
+
+## 🧱 Sistema de Puntos
+
+| Color del ladrillo | Puntos |
+|--------------------|--------|
+| 🟨 Amarillo         | 1      |
+| 🟩 Verde            | 3      |
+| 🟧 Naranja          | 5      |
+| 🟥 Rojo             | 37     |
+
+## 🗺️ Nivel
+
+El juego contiene **un solo nivel**.
+
 
 
 https://github.com/user-attachments/assets/5c580034-d893-4cd1-9c77-e5c90072cf02
